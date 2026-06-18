@@ -174,7 +174,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
         onLogin(appUser);
       }, 800);
     } catch (err) {
-      const error = err as any;
+      const error = err as Error & { code?: string };
       console.error("Firebase sign-in error details:", error);
       let errMsg = "Invalid email address or incorrect password.";
       if (error.code === "auth/operation-not-allowed") {
@@ -238,7 +238,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
         });
       }, 1000);
     } catch (err) {
-      const error = err as any;
+      const error = err as Error & { code?: string };
       console.error("Firebase registration error details:", error);
       let errMsg = "Failed to register account via Firebase.";
       if (error.code === "auth/operation-not-allowed") {
@@ -285,7 +285,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
         onLogin(appUser);
       }, 800);
     } catch (err) {
-      const error = err as any;
+      const error = err as Error & { code?: string };
       console.error("Firebase Google sign-in error details:", error);
       let errMsg = "Google Sign-In failed.";
       if (error.message) {
@@ -309,7 +309,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
       try {
         userCredential = await signInWithEmailAndPassword(auth, "eco@advisor.org", "secureDemoPass2026!");
       } catch (e) {
-        const error = e as any;
+        const error = e as Error & { code?: string };
         // If developer demo user account doesn't exist yet on client's firebase, bootstrap it!
         if (error.code === "auth/user-not-found" || error.code === "auth/invalid-credential") {
           userCredential = await createUserWithEmailAndPassword(auth, "eco@advisor.org", "secureDemoPass2026!");
@@ -339,7 +339,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
         onLogin(demoUser);
       }, 600);
     } catch (err) {
-      const error = err as any;
+      const error = err as Error & { code?: string };
       console.warn("Live Firebase connection unavailable, using safe local-fallback:", error);
       
       // Standalone sandbox mock fallback to protect active app visualization during console config
@@ -596,6 +596,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
                     tabIndex={-1}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>

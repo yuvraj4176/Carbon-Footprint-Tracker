@@ -11,11 +11,12 @@ import {
   DEFAULT_PLEDGES,
 } from "./utils/carbonCalculator";
 import Dashboard from "./components/Dashboard";
-import CalculatorForm from "./components/CalculatorForm";
-import ActionRoadmap from "./components/ActionRoadmap";
-import EcoCoach from "./components/EcoCoach";
-import SelfTest from "./components/SelfTest";
 import AuthPage from "./components/AuthPage";
+
+const CalculatorForm = React.lazy(() => import("./components/CalculatorForm"));
+const ActionRoadmap = React.lazy(() => import("./components/ActionRoadmap"));
+const EcoCoach = React.lazy(() => import("./components/EcoCoach"));
+const SelfTest = React.lazy(() => import("./components/SelfTest"));
 import { BarChart3, Calculator, Sparkles, ShieldAlert, CheckSquare, Leaf, LogOut, User as UserIcon } from "lucide-react";
 import { auth } from "./lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -461,6 +462,7 @@ export default function App() {
             <button
               id="btn-trigger-logout"
               onClick={handleLogout}
+              aria-label="Sign out of the workspace session"
               className="bg-emerald-50 hover:bg-rose-50 text-[#059669] hover:text-rose-600 p-2.5 rounded-2xl border border-emerald-100/50 hover:border-rose-100/50 cursor-pointer shadow-sm transition hover:scale-[1.02] flex items-center justify-center gap-1.5 text-xs font-bold"
               title="Exit workspace session"
             >
@@ -555,41 +557,43 @@ export default function App() {
 
         {/* Dynamic Display Canvas Right */}
         <section className="flex-1 min-w-0" id="main-content-viewport" aria-live="polite">
-          {activeTab === "dashboard" && (
-            <Dashboard breakdown={breakdown} activePledgeSavings={activePledgeSavings} targetGoalTons={currentUser?.targetGoalTons} />
-          )}
+          <React.Suspense fallback={<div className="flex items-center justify-center h-full p-8 text-emerald-600 font-bold animate-pulse">Loading workspace module...</div>}>
+            {activeTab === "dashboard" && (
+              <Dashboard breakdown={breakdown} activePledgeSavings={activePledgeSavings} targetGoalTons={currentUser?.targetGoalTons} />
+            )}
 
-          {activeTab === "calculate" && (
-            <div className="space-y-6">
-              <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.03)]">
-                <h2 className="text-lg font-extrabold text-slate-800">Lifestyle Variables</h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Adjust parameters across various categories to update your footprint. Calculations adjust live in real-time.
-                </p>
+            {activeTab === "calculate" && (
+              <div className="space-y-6">
+                <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.03)]">
+                  <h2 className="text-lg font-extrabold text-slate-800">Lifestyle Variables</h2>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Adjust parameters across various categories to update your footprint. Calculations adjust live in real-time.
+                  </p>
+                </div>
+                <CalculatorForm profile={profile} onChange={handleProfileChange} />
               </div>
-              <CalculatorForm profile={profile} onChange={handleProfileChange} />
-            </div>
-          )}
+            )}
 
-          {activeTab === "action" && (
-            <ActionRoadmap
-              pledges={pledges}
-              onTogglePledge={handleTogglePledge}
-              onAddCustomPledge={handleAddCustomPledge}
-            />
-          )}
+            {activeTab === "action" && (
+              <ActionRoadmap
+                pledges={pledges}
+                onTogglePledge={handleTogglePledge}
+                onAddCustomPledge={handleAddCustomPledge}
+              />
+            )}
 
-          {activeTab === "coach" && (
-            <EcoCoach
-              profile={profile}
-              emissions={breakdown}
-              onAddPledgeFromAI={handleAddPledgeFromAI}
-              savedAnalysis={savedAnalysis}
-              onSaveAnalysis={handleSaveAnalysis}
-            />
-          )}
+            {activeTab === "coach" && (
+              <EcoCoach
+                profile={profile}
+                emissions={breakdown}
+                onAddPledgeFromAI={handleAddPledgeFromAI}
+                savedAnalysis={savedAnalysis}
+                onSaveAnalysis={handleSaveAnalysis}
+              />
+            )}
 
-          {activeTab === "selftest" && <SelfTest />}
+            {activeTab === "selftest" && <SelfTest />}
+          </React.Suspense>
         </section>
       </main>
 
