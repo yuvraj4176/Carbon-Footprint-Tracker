@@ -34,7 +34,7 @@ app.use("/api/", apiLimiter);
 
 app.use(express.json({ limit: "10kb" })); // Body size limit for security
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Initialize GoogleGenAI server-side with user-agent telemetry telemetry standard.
 let ai: GoogleGenAI | null = null;

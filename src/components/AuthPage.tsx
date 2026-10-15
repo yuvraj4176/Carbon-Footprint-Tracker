@@ -287,6 +287,12 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
     } catch (err) {
       const error = err as Error & { code?: string };
       console.error("Firebase Google sign-in error details:", error);
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError("Google Sign-In was cancelled. Please try again.");
+        return;
+      }
+      
       let errMsg = "Google Sign-In failed.";
       if (error.message) {
         errMsg = error.message;
